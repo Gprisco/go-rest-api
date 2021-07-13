@@ -1,28 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/gprisco/nic-series-yt/handlers"
 )
 
 func main() {
-	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
-		log.Println("Hello World!")
-		d, err := ioutil.ReadAll(r.Body)
+	logger := log.New(os.Stdout, "product-api => ", log.LstdFlags)
+	hh := handlers.NewHello(logger)
 
-		if err != nil {
-			http.Error(rw, err.Error(), http.StatusBadRequest)
-			return
-		}
+	sm := http.NewServeMux()
+	sm.Handle("/", hh)
 
-		fmt.Fprintf(rw, "Hello %s!", d)
-	})
-
-	http.HandleFunc("/goodbye", func(rw http.ResponseWriter, r *http.Request) {
-		log.Println("Goodbye World!")
-	})
-
-	http.ListenAndServe(":9000", nil)
+	http.ListenAndServe(":9090", sm)
 }
