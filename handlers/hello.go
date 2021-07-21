@@ -15,6 +15,8 @@ func NewHello(l *log.Logger) *Hello {
 	return &Hello{l}
 }
 
+// ServeHTTP implements the http.Handler interface
+// https://pkg.go.dev/net/http#Handler
 func (h *Hello) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	h.logger.Println("Hello World!")
 	d, err := ioutil.ReadAll(r.Body)
