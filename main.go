@@ -8,20 +8,26 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/gprisco/nic-series-yt/handlers"
 )
 
 func main() {
 	logger := log.New(os.Stdout, "product-api => ", log.LstdFlags)
 
-	// hh := handlers.NewHello(logger)
-	// gh := handlers.NewGoodbye(logger)
 	ph := handlers.NewProducts(logger)
 
-	sm := http.NewServeMux()
-	// sm.Handle("/", hh)
-	// sm.Handle("/goodbye", gh)
-	sm.Handle("/", ph)
+	sm := mux.NewRouter()
+
+	getSubrouter := sm.Methods(http.MethodGet).Subrouter()
+	postSubrouter := sm.Methods(http.MethodPost).Subrouter()
+	putSubrouter := sm.Methods(http.MethodPut).Subrouter()
+
+	getSubrouter.HandleFunc("/", ph.GetProducts)
+
+	postSubrouter.HandleFunc("/", ph.AddProduct)
+
+	putSubrouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProduct)
 
 	s := &http.Server{
 		Addr:         ":9090",
